@@ -30,33 +30,59 @@ def ShowStatLine(position):
 
     return correctStats[position]
 
-def ShowAll(bestAll, response):
+def ShowAll(bestAll, response, players):
     i = 1
     print(ShowStatLine(response))
     print()
     for vals in bestAll.values():
 
         for player in vals:
-            print(f'{str(i) + ".":5}', end= "")
-            player.showStats()
+            if player.name in players:
+                print(f'{str(i) + ".":5}', end= "")
+                player.showStats()
+                i = i+1
 
-        i = i+1
         if i == 21:
             break
         
-def ShowPos(best, pos):
+def ShowPos(best, pos, players):
     i = 1
     print(ShowStatLine(pos))
     print()
     for vals in best.values():
 
         for player in vals:
-            print(f'{str(i) + ".":5}', end= "")
-            player.showPosStats()
+            # only do this if player hasn't been drafted
+            if player.name in players:
+                print(f'{str(i) + ".":5}', end= "")
+                player.showPosStats()
+                i = i+1
 
-        i = i+1
         if i == 11:
             break
+
+# draft mode
+def AddToTeam(myTeam, All):
+    response = input("Please type player's full name, as it appears on list\n")
+    
+    while(True):
+        # checks if they want to go back
+        if response == "back":
+            break
+
+        # looks for player in players
+        if response in All:
+            myTeam[response] = All[response]
+            print(f'\nAdded {response} to your team. Great Pick!')
+            RemovePlayer(All, response)
+            break
+        
+        # couldn't find player, prompt again
+        else:
+            response = input("Could not find player, either retype player's full name as it appears on the list or type 'back' to go back\n")
+
+def RemovePlayer(All, response):
+    del All[response]
 
 # get all the players
 players, QBs, RBs, WRs, TEs, Ks, DEFs = sort.RunAll()
@@ -92,6 +118,8 @@ bestTEs = OrderedDict(sorted(bestTEs.items()))
 bestKs = OrderedDict(sorted(bestKs.items()))
 bestDEFs = OrderedDict(sorted(bestDEFs.items()))
 
+myTeam = {}
+
 # This is where the program begins
 
 print("\n\n\n\n**********Fantasy Football Ultimate Draft Algorithm**********")
@@ -111,10 +139,10 @@ print("Type 'q' to exit the live draft\n")
 
 while(True):
 
-    print("\nAwaiting input...  (type 'help' to see a list of commands')")
+    response = input("\nAwaiting input...  (type 'help' to see a list of commands')\n")
 
-    
-    response = input()
+    if "Josh Jacobs" in players:
+        print("True")
 
     if response == "q":
         break
@@ -123,16 +151,28 @@ while(True):
         ShowCommands()
 
     elif response == "all":
-        ShowAll(bestAll, response)
+        ShowAll(bestAll, response, players)
     elif response == "qb":
-        ShowPos(bestQBs, response)
+        ShowPos(bestQBs, response, players)
     elif response == "rb":
-        ShowPos(bestRBs, response)
+        ShowPos(bestRBs, response, players)
     elif response == "wr":
-        ShowPos(bestWRs, response)
+        ShowPos(bestWRs, response, players)
     elif response == "te":
-        ShowPos(bestTEs, response)
+        ShowPos(bestTEs, response, players)
     elif response == "def":
-        ShowPos(bestDEFs, response)
+        ShowPos(bestDEFs, response, players)
     elif response == "k":
-        ShowPos(bestKs, response)
+        ShowPos(bestKs, response, players)
+    elif response == "draft":
+        print("Was this player drafted by you or someone else?\n")
+        print("Type: 'me' if you drafted the player")
+        print("Type: 'other' if someone else drafted the player")
+        
+        response = input()
+
+        if response == "me":
+            AddToTeam(myTeam, players)
+        else:
+            response = input("Who just got drafted? Please type in the name of the player as it appears on list\n")
+            RemovePlayer(players, response)
