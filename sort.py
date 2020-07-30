@@ -89,8 +89,6 @@ class QB(Player):
         print(f'{self.name:20}', end="")
         print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.passYard:<8}{self.passTD:<6}{self.passInt:<4}{self.rushYard:<8}{self.rushTD:<6}{self.composite:<8}')
 
-
-
 class RB(Player):
     def __init__(self):
         super().__init__()
@@ -836,7 +834,7 @@ def GetSos(filename, teams, part):
 
     return teams
 
-def AssignSos(players, teams):
+def AssignSos(players, QBs, RBs, WRs, TEs, Ks, DEFs, teams):
     for player in players.values():
         
         teamName = player.proTeam
@@ -847,33 +845,39 @@ def AssignSos(players, teams):
             player.fullSos = teams[teamName].QBfull
             player.seasonSos = teams[teamName].QBseason
             player.playoffSos = teams[teamName].QBplayoff
+            QBs[player.name].__dict__.update(player.__dict__)
         
         elif player.position == 'RB':
             player.fullSos = teams[teamName].RBfull
             player.seasonSos = teams[teamName].RBseason
             player.playoffSos = teams[teamName].RBplayoff
+            RBs[player.name].__dict__.update(player.__dict__)
 
         elif player.position == 'WR':
             player.fullSos = teams[teamName].WRfull
             player.seasonSos = teams[teamName].WRseason
             player.playoffSos = teams[teamName].WRplayoff
+            WRs[player.name].__dict__.update(player.__dict__)
 
         elif player.position == 'TE':
             player.fullSos = teams[teamName].TEfull
             player.seasonSos = teams[teamName].TEseason
             player.playoffSos = teams[teamName].TEplayoff
+            TEs[player.name].__dict__.update(player.__dict__)
 
         elif player.position == 'K':
             player.fullSos = teams[teamName].Kfull
             player.seasonSos = teams[teamName].Kseason
             player.playoffSos = teams[teamName].Kplayoff
+            Ks[player.name].__dict__.update(player.__dict__)
 
         elif player.position == 'DEF':
             player.fullSos = teams[teamName].DEFfull
             player.seasonSos = teams[teamName].DEFseason
             player.playoffSos = teams[teamName].DEFplayoff
+            DEFs[player.name].__dict__.update(player.__dict__)
             
-    return players
+    return players, QBs, RBs, WRs, TEs, Ks, DEFs
 
 def RunAll():
     # creates empty players dictionary
@@ -909,7 +913,7 @@ def RunAll():
     players, QBs, RBs, WRs, TEs, Ks, DEFs = ReadTiers("stats/Tiers.txt", players, QBs, RBs, WRs, TEs, Ks, DEFs)
 
     # assigning strength of schedule values
-    players = AssignSos(players, teams)
+    players, QBs, RBs, WRs, TEs, Ks, DEFs = AssignSos(players, QBs, RBs, WRs, TEs, Ks, DEFs, teams)
 
     # calculate composite for each player in each dict
     for player in players.values():
