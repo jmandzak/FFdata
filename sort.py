@@ -70,7 +70,7 @@ class Player:
 
     def showStats(self):
         print(f'{self.name:20}', end="")
-        print(f'{self.position:6}{self.proTeam:6}{self.avgRank:6}{self.tier:6}{self.fullSos:6}{self.composite:8}')
+        print(f'{self.position:<6}{self.proTeam:<6}{self.avgRank:<6}{self.tier:<6}{self.fullSos:<6}{self.composite:<8}')
     
 # all position classes are inherited from player so they have all the values in the player class
 class QB(Player):
@@ -84,6 +84,12 @@ class QB(Player):
         self.rushAtt = 0
         self.rushYard = 0
         self.rushTD = 0
+    
+    def showPosStats(self):
+        print(f'{self.name:20}', end="")
+        print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.passYard:<8}{self.passTD:<6}{self.passInt:<4}{self.rushYard:<8}{self.rushTD:<6}{self.composite:<8}')
+
+
 
 class RB(Player):
     def __init__(self):
@@ -96,6 +102,10 @@ class RB(Player):
         self.recYard = 0
         self.recTD = 0
 
+    def showPosStats(self):
+        print(f'{self.name:20}', end="")
+        print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.rushYard:<8}{self.rushTD:<6}{self.recTarget:<8}{self.receptions:<8}{self.recYard:<8}{self.recTD:<6}{self.composite:<8}')
+
 class WR(Player):
     def __init__(self):
         super().__init__()
@@ -107,6 +117,10 @@ class WR(Player):
         self.rushYard = 0
         self.rushTD = 0
 
+    def showPosStats(self):
+        print(f'{self.name:20}', end="")
+        print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.recTarget:<8}{self.receptions:<8}{self.recYard:<8}{self.recTD:<4}{self.composite:<8}')
+
 class TE(Player):
     def __init__(self):
         super().__init__()
@@ -114,6 +128,10 @@ class TE(Player):
         self.receptions = 0
         self.recYard = 0
         self.recTD = 0
+
+    def showPosStats(self):
+        print(f'{self.name:20}', end="")
+        print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.recTarget:<8}{self.receptions:<8}{self.recYard:<8}{self.recTD:<4}{self.composite:<8}')
 
 class K(Player):
     def __init__(self):
@@ -123,6 +141,10 @@ class K(Player):
         self.FGpercent = 0.0
         self.EPM = 0
         self.EPA = 0
+
+    def showPosStats(self):
+        print(f'{self.name:20}', end="")
+        print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.FGM:<4}{self.FGA:<4}{self.FGpercent:<6}{self.EPM:<4}{self.EPA:<4}{self.composite:<8}')
 
 class Defense(Player):
     def __init__(self):
@@ -137,6 +159,10 @@ class Defense(Player):
         self.rushYPG = 0.0
         self.safety = 0
         self.kickTD = 0
+
+    def showPosStats(self):
+        print(f'{self.name:5}', end="")
+        print(f'{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.sack:<6}{self.FR:<4}{self.intercept:<4}{self.TD:<4}{self.kickTD:<6}{self.composite:<8}')
 
 # this global dict is a look up table to get the abbreviations for defenses, which
 # are given in one website as the team's entire name, so that a team's abbr. is always its name
@@ -213,7 +239,7 @@ def ReadQB(players):
             q = QB()
 
             # this statement initializes all the values shared by q and p with values in p
-            q.__dict__ = p.__dict__
+            q.__dict__.update(p.__dict__)
 
             q.passComp = words[5]
             q.passAtt = words[6]
@@ -266,7 +292,7 @@ def ReadRB(players):
             r = RB()
             
             # initialize r with all of p's values
-            r.__dict__ = p.__dict__
+            r.__dict__.update(p.__dict__)
 
             r.rushAtt = words[5]
             r.rushYard = words[6]
@@ -316,7 +342,7 @@ def ReadWR(players):
 
 
             wr = WR()
-            wr.__dict__ = p.__dict__
+            wr.__dict__.update(p.__dict__)
 
             wr.recTarget = words[5]
             wr.receptions = words[6]
@@ -365,7 +391,7 @@ def ReadTE(players):
 
 
             te = TE()
-            te.__dict__ = p.__dict__
+            te.__dict__.update(p.__dict__)
 
             te.recTarget = words[5]
             te.receptions = words[6]
@@ -411,7 +437,7 @@ def ReadK(players):
 
 
             k = K()
-            k.__dict__ = p.__dict__
+            k.__dict__.update(p.__dict__)
 
             k.FGM = words[5]
             k.FGA = words[6]
@@ -454,7 +480,7 @@ def ReadDEF(players):
 
 
             d = Defense()
-            d.__dict__ = p.__dict__
+            d.__dict__.update(p.__dict__)
 
             d.sack = words[3]
             d.FR = words[4]
@@ -593,7 +619,7 @@ def PosTiers(filename, players, posdict, position):
                 else:
                     player = K()
                 
-                player.__dict__ = p.__dict__
+                player.__dict__.update(p.__dict__)
                 posdict[player.name] = player
             
     f.close()

@@ -17,39 +17,46 @@ def ShowCommands():
 
     print("Type 'q' to exit the live draft\n")
 
-def ShowAll(bestAll):
+def ShowStatLine(position):
+    correctStats = {
+        "all": f'     {"Name":20}{"Pos.":<6}{"Team":<6}{"Rank":<6}{"Tier":<6}{"SoS":<6}{"Comp.":<8}',
+        "qb": f'     {"Name":20}{"Team":<6}{"Rank":<8}{"Tier":<6}{"SoS":<6}{"P.Yds":<8}{"P.TD":<6}{"Int":<4}{"R.Yds":<8}{"R.TD":<6}{"Comp.":<8}',
+        "rb": f'     {"Name":20}{"Team":<6}{"Rank":<8}{"Tier":<6}{"SoS":<6}{"Ru.Yds":<8}{"Ru.TD":<6}{"Target":<8}{"Recep":<8}{"Re.Yds":<8}{"Re.TD":<6}{"Comp":<8}',
+        "wr": f'     {"Name":20}{"Team":<6}{"Rank":<8}{"Tier":<6}{"SoS":<6}{"Target":<8}{"Recep":<8}{"Yds":<8}{"TD":<4}{"Comp":<8}',
+        "te": f'     {"Name":20}{"Team":<6}{"Rank":<8}{"Tier":<6}{"SoS":<6}{"Target":<8}{"Recep":<8}{"Yds":<8}{"TD":<4}{"Comp":<8}',
+        "def": f'     {"Name":5}{"Rank":<8}{"Tier":<6}{"SoS":<6}{"Sack":<6}{"FR":<4}{"Int":<4}{"TD":<4}{"K.TD":<6}{"Comp":<8}',
+        "k": f'     {"Name":20}{"Team":<6}{"Rank":<8}{"Tier":<6}{"SoS":<6}{"FGM":<4}{"FGA":<4}{"FG%":<6}{"EPM":<4}{"EPA":<4}{"Comp":<8}'
+    }
+
+    return correctStats[position]
+
+def ShowAll(bestAll, response):
     i = 1
-    print(f'     {"name":20}{"Pos.":6}{"Team":6}{"Rank":>6}{"Tier":>6}{"SoS":>6}{"Comp.":>8}')
+    print(ShowStatLine(response))
+    print()
     for vals in bestAll.values():
 
         for player in vals:
             print(f'{str(i) + ".":5}', end= "")
             player.showStats()
 
-        print()
+        i = i+1
+        if i == 21:
+            break
+        
+def ShowPos(best, pos):
+    i = 1
+    print(ShowStatLine(pos))
+    print()
+    for vals in best.values():
+
+        for player in vals:
+            print(f'{str(i) + ".":5}', end= "")
+            player.showPosStats()
+
         i = i+1
         if i == 11:
             break
-        
-
-
-def ShowQBs(bestQBs):
-    pass
-
-def ShowRBs(bestRBs):
-    pass
-
-def ShowWRs(bestWRs):
-    pass
-
-def ShowTEs(bestTEs):
-    pass
-
-def ShowDEFs(bestDEFs):
-    pass
-
-def ShowKs(bestKs):
-    pass
 
 # get all the players
 players, QBs, RBs, WRs, TEs, Ks, DEFs = sort.RunAll()
@@ -116,4 +123,16 @@ while(True):
         ShowCommands()
 
     elif response == "all":
-        ShowAll(bestAll)
+        ShowAll(bestAll, response)
+    elif response == "qb":
+        ShowPos(bestQBs, response)
+    elif response == "rb":
+        ShowPos(bestRBs, response)
+    elif response == "wr":
+        ShowPos(bestWRs, response)
+    elif response == "te":
+        ShowPos(bestTEs, response)
+    elif response == "def":
+        ShowPos(bestDEFs, response)
+    elif response == "k":
+        ShowPos(bestKs, response)
