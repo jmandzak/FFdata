@@ -141,9 +141,6 @@ while(True):
 
     response = input("\nAwaiting input...  (type 'help' to see a list of commands')\n")
 
-    if "Josh Jacobs" in players:
-        print("True")
-
     if response == "q":
         break
     
