@@ -34,23 +34,43 @@ class Team:
 
 class Player:
     def __init__(self):
+        # traits
         self.name = ""
-        self.pastPoints = 0.0
-        self.pastPPG = 0.0
-        self.projRank = 500
         self.proTeam = ""
-        self.games = 0
+        self.position = ""
+
+        # current overall rank
+        self.projRank = 500
+        self.avgRank = 500
+
+        # current position rank
+        self.newPosRank = 500
+        self.avgPosRank = 500
+
+        # current tier
         self.tier = 0
         self.posTier = 0
-        self.position = ""
-        self.pastPosRank = 0
-        self.newPosRank = 500
-        self.avgRank = 500
-        self.avgPosRank = 500
-        self.composite = 10000.0    # this is the money number that figures out a player's actual value
+
+        # current strength of schedule
         self.fullSos = 32
         self.seasonSos = 32
         self.playoffSos = 32
+
+        # past rank
+        self.pastPosRank = 0
+
+        # past stats
+        self.pastPoints = 0.0
+        self.pastPPG = 0.0
+        self.games = 0
+        
+        # composite
+        self.composite = 10000.0    # this is the money number that figures out a player's actual value
+        
+
+    def showStats(self):
+        print(f'{self.name:20}', end="")
+        print(f'{self.position:6}{self.proTeam:6}{self.avgRank:6}{self.tier:6}{self.fullSos:6}{self.composite:8}')
     
 # all position classes are inherited from player so they have all the values in the player class
 class QB(Player):
@@ -420,23 +440,15 @@ def ReadDEF(players):
             p.position = "DEF"
             p.pastPosRank = words[0]
 
-            # special case here since some teams names are long
-            if(len(words) == 16):
-                name = words[1] + ' ' + words[2] + ' ' + words[3]
-                
-                # this deletes a value so the rest of the read can go normally
-                del words[3]
-            else:
-                name = words[1] + ' ' + words[2]
+            name = words[1]
             
             # here we access the look up table declared to get the abbreviation
-            name = name.split()
-            name = abbr[name[len(name)-1]]
+            name = abbr[name]
 
             p.name = name
-            p.games = words[3]
-            p.pastPoints = words[13]
-            p.pastPPG = words[14]
+            p.games = words[2]
+            p.pastPoints = words[12]
+            p.pastPPG = words[13]
 
             players[p.name] = p
 
@@ -444,15 +456,15 @@ def ReadDEF(players):
             d = Defense()
             d.__dict__ = p.__dict__
 
-            d.sack = words[4]
-            d.FR = words[5]
-            d.intercept = words[6]
-            d.TD = words[7]
-            d.PA = words[8]
-            d.passYPG = words[9]
-            d.rushYPG = words[10]
-            d.safety = words[11]
-            d.kickTD = words[12]
+            d.sack = words[3]
+            d.FR = words[4]
+            d.intercept = words[5]
+            d.TD = words[6]
+            d.PA = words[7]
+            d.passYPG = words[8]
+            d.rushYPG = words[9]
+            d.safety = words[10]
+            d.kickTD = words[11]
 
             DEFs[d.name] = d
     
@@ -752,12 +764,12 @@ def GetSos(filename, teams, part):
         elif name == "JAX":
             name = "JAC"
 
-        qb = float(line[1])
-        rb = float(line[2])
-        wr = float(line[3])
-        te = float(line[4])
-        k = float(line[5])
-        df = float(line[6])
+        qb = int(line[1])
+        rb = int(line[2])
+        wr = int(line[3])
+        te = int(line[4])
+        k = int(line[5])
+        df = int(line[6])
 
 
         if part == 'full':
@@ -837,81 +849,86 @@ def AssignSos(players, teams):
             
     return players
 
-# creates empty players dictionary
-players = {}
+def RunAll():
+    # creates empty players dictionary
+    players = {}
 
-# creates empty teams dictionary
-teams = {}
+    # creates empty teams dictionary
+    teams = {}
 
-# calls all functions to fill in dictionaries
+    # calls all functions to fill in dictionaries
 
-# strength of schedule
-teams = GetSos("stats/Sos_Full.txt", teams, "full")
-teams = GetSos("stats/Sos_Season.txt", teams, "season")
-teams = GetSos("stats/Sos_Playoff.txt", teams, "playoff")
+    # strength of schedule
+    teams = GetSos("stats/Sos_Full.txt", teams, "full")
+    teams = GetSos("stats/Sos_Season.txt", teams, "season")
+    teams = GetSos("stats/Sos_Playoff.txt", teams, "playoff")
 
-# past stats
-players, QBs = ReadQB(players)
-players, RBs = ReadRB(players)
-players, WRs = ReadWR(players)
-players, TEs = ReadTE(players)
-players, Ks = ReadK(players)
-players, DEFs = ReadDEF(players)
+    # past stats
+    players, QBs = ReadQB(players)
+    players, RBs = ReadRB(players)
+    players, WRs = ReadWR(players)
+    players, TEs = ReadTE(players)
+    players, Ks = ReadK(players)
+    players, DEFs = ReadDEF(players)
 
-# position specific tiers and rank
-players, QBs = PosTiers("stats/QB_Tiers.txt", players, QBs, "QB")
-players, RBs = PosTiers("stats/RB_Tiers.txt", players, RBs, "RB")
-players, WRs = PosTiers("stats/WR_Tiers.txt", players, WRs, "WR")
-players, TEs = PosTiers("stats/TE_Tiers.txt", players, TEs, "TE")
-players, Ks = PosTiers("stats/K_Tiers.txt", players, Ks, "K")
-players, DEFs = DEFTiers(players, DEFs)
+    # position specific tiers and rank
+    players, QBs = PosTiers("stats/QB_Tiers.txt", players, QBs, "QB")
+    players, RBs = PosTiers("stats/RB_Tiers.txt", players, RBs, "RB")
+    players, WRs = PosTiers("stats/WR_Tiers.txt", players, WRs, "WR")
+    players, TEs = PosTiers("stats/TE_Tiers.txt", players, TEs, "TE")
+    players, Ks = PosTiers("stats/K_Tiers.txt", players, Ks, "K")
+    players, DEFs = DEFTiers(players, DEFs)
 
-# non position specific rank
-players, QBs, RBs, WRs, TEs, Ks, DEFs = ReadTiers("stats/Tiers.txt", players, QBs, RBs, WRs, TEs, Ks, DEFs)
+    # non position specific rank
+    players, QBs, RBs, WRs, TEs, Ks, DEFs = ReadTiers("stats/Tiers.txt", players, QBs, RBs, WRs, TEs, Ks, DEFs)
 
-# assigning strength of schedule values
-players = AssignSos(players, teams)
+    # assigning strength of schedule values
+    players = AssignSos(players, teams)
 
+    # calculate composite for each player in each dict
+    for player in players.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
 
-# calculate composite for each player in each dict
-for player in players.values():
-    if player.avgPosRank != 500 and player.avgRank != 500:
-        player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-        player.composite = round(player.composite, 3)
+    for player in QBs.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
 
-for player in QBs.values():
-    if player.avgPosRank != 500 and player.avgRank != 500:
-        player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-        player.composite = round(player.composite, 3)
+    for player in RBs.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
 
-for player in RBs.values():
-    if player.avgPosRank != 500 and player.avgRank != 500:
-        player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-        player.composite = round(player.composite, 3)
+    for player in WRs.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
 
-for player in WRs.values():
-    if player.avgPosRank != 500 and player.avgRank != 500:
-        player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-        player.composite = round(player.composite, 3)
+    for player in TEs.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
 
-for player in TEs.values():
-    if player.avgPosRank != 500 and player.avgRank != 500:
-        player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-        player.composite = round(player.composite, 3)
+    for player in Ks.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
 
-for player in Ks.values():
-    if player.avgPosRank != 500 and player.avgRank != 500:
-        player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-        player.composite = round(player.composite, 3)
+    for player in DEFs.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
 
-for player in DEFs.values():
-    if player.avgPosRank != 500 and player.avgRank != 500:
-        player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-        player.composite = round(player.composite, 3)
+    return players, QBs, RBs, WRs, TEs, Ks, DEFs
 
 # put all players into new dictionaries
 # this acts essentially as a c++ multimap, storing all players
 # with keys as composite and vals as lists of players with that composite
+
+players, QBs, RBs, WRs, TEs, Ks, DEFs = RunAll()
+
 bestAll = defaultdict(list)
 bestQBs = defaultdict(list)
 bestRBs = defaultdict(list)
@@ -952,5 +969,3 @@ for vals in bestAll.values():
         if player.composite != 10000:
             f.write(str(player.composite) + ' ' + player.name + ' ' + str(player.projRank))
             f.write('\n')
-
-f.close()
