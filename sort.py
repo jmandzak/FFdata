@@ -879,6 +879,14 @@ def AssignSos(players, QBs, RBs, WRs, TEs, Ks, DEFs, teams):
             
     return players, QBs, RBs, WRs, TEs, Ks, DEFs
 
+def CalcComposite(players):
+    for player in players.values():
+        if player.avgPosRank != 500 and player.avgRank != 500:
+            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
+            player.composite = round(player.composite, 3)
+
+    return players
+
 def RunAll():
     # creates empty players dictionary
     players = {}
@@ -916,40 +924,13 @@ def RunAll():
     players, QBs, RBs, WRs, TEs, Ks, DEFs = AssignSos(players, QBs, RBs, WRs, TEs, Ks, DEFs, teams)
 
     # calculate composite for each player in each dict
-    for player in players.values():
-        if player.avgPosRank != 500 and player.avgRank != 500:
-            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-            player.composite = round(player.composite, 3)
-
-    for player in QBs.values():
-        if player.avgPosRank != 500 and player.avgRank != 500:
-            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-            player.composite = round(player.composite, 3)
-
-    for player in RBs.values():
-        if player.avgPosRank != 500 and player.avgRank != 500:
-            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-            player.composite = round(player.composite, 3)
-
-    for player in WRs.values():
-        if player.avgPosRank != 500 and player.avgRank != 500:
-            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-            player.composite = round(player.composite, 3)
-
-    for player in TEs.values():
-        if player.avgPosRank != 500 and player.avgRank != 500:
-            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-            player.composite = round(player.composite, 3)
-
-    for player in Ks.values():
-        if player.avgPosRank != 500 and player.avgRank != 500:
-            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-            player.composite = round(player.composite, 3)
-
-    for player in DEFs.values():
-        if player.avgPosRank != 500 and player.avgRank != 500:
-            player.composite = player.avgPosRank + player.avgRank + player.projRank + player.newPosRank + player.tier + player.posTier + (player.fullSos / 4)
-            player.composite = round(player.composite, 3)
+    players = CalcComposite(players)
+    QBs = CalcComposite(QBs)
+    RBs = CalcComposite(RBs)
+    WRs = CalcComposite(WRs)
+    TEs = CalcComposite(TEs)
+    DEFs = CalcComposite(DEFs)
+    Ks = CalcComposite(Ks)
 
     return players, QBs, RBs, WRs, TEs, Ks, DEFs
 
