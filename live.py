@@ -16,6 +16,8 @@ def ShowCommands():
 
     print("\nWhen you're ready to draft a player or someone else has drafted a player, type 'draft'\n")
 
+    print("To see your own team, type 'team'\n")
+
     print("Type 'q' to exit the live draft\n")
 
 # this stat line is what shows up above the players when showing best available
@@ -68,8 +70,11 @@ def ShowPos(best, pos, players):
 
 # triggered when you draft a player to your team
 def AddToTeam(myTeam, response, All):
-    myTeam[response] = All[response]
+    myTeam[All[response].position].append(All[response])
+
     print(f'{response} has been added to your team. Great Pick!')
+
+    return myTeam
 
 # simply deletes the player from the 'players' dictionary
 def RemovePlayer(All, response):
@@ -88,6 +93,17 @@ def FindPlayer(All):
             break
     
     return response
+
+def ShowMyTeam(myTeam):
+    print()
+    for position in myTeam:
+        print(f'{position}:  ', end="")
+
+        for player in myTeam[position]:
+            print(f'{player.name:25}', end="")
+
+        print()
+
 
 # get all the players
 players, QBs, RBs, WRs, TEs, Ks, DEFs = sort.RunAll()
@@ -124,7 +140,16 @@ bestTEs = OrderedDict(sorted(bestTEs.items()))
 bestKs = OrderedDict(sorted(bestKs.items()))
 bestDEFs = OrderedDict(sorted(bestDEFs.items()))
 
-myTeam = {}
+myTeam = defaultdict(list)
+
+myTeam = {
+    "QB": [],
+    "RB": [],
+    "WR": [],
+    "TE": [],
+    "DEF": [],
+    "K": []
+}
 
 # This is where the program begins
 
@@ -172,7 +197,7 @@ while(True):
         if response == "me":
             response = FindPlayer(players)
             if response != "back":
-                AddToTeam(myTeam, response, players)
+                myTeam = AddToTeam(myTeam, response, players)
                 RemovePlayer(players, response)
 
         # drafted by someone else
@@ -180,3 +205,6 @@ while(True):
             response = FindPlayer(players)
             if response != "back":
                 RemovePlayer(players, response)
+
+    elif response == "team":
+        ShowMyTeam(myTeam)
