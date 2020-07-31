@@ -4,6 +4,7 @@ from collections import defaultdict
 
 # useful functions
 
+# triggered at the beginning of the program and on 'help' command to remind the user what they can do
 def ShowCommands():
     print("Type 'all' to see the top 20 available players")
     print("Type 'qb' to see the top 10 available ")
@@ -17,6 +18,7 @@ def ShowCommands():
 
     print("Type 'q' to exit the live draft\n")
 
+# this stat line is what shows up above the players when showing best available
 def ShowStatLine(position):
     correctStats = {
         "all": f'     {"Name":20}{"Pos.":<6}{"Team":<6}{"Rank":<6}{"Tier":<6}{"SoS":<6}{"Comp.":<8}',
@@ -30,6 +32,7 @@ def ShowStatLine(position):
 
     return correctStats[position]
 
+# function to show top 20 available players
 def ShowAll(bestAll, response, players):
     i = 1
     print(ShowStatLine(response))
@@ -37,6 +40,7 @@ def ShowAll(bestAll, response, players):
     for vals in bestAll.values():
 
         for player in vals:
+            # only show them if they haven't been drafted
             if player.name in players:
                 print(f'{str(i) + ".":5}', end= "")
                 player.showStats()
@@ -45,6 +49,7 @@ def ShowAll(bestAll, response, players):
         if i == 21:
             break
         
+# function to show top 10 available players at a certain position
 def ShowPos(best, pos, players):
     i = 1
     print(ShowStatLine(pos))
@@ -61,32 +66,33 @@ def ShowPos(best, pos, players):
         if i == 11:
             break
 
-# draft mode
-def AddToTeam(myTeam, All):
-    response = input("Please type player's full name, as it appears on list\n")
-    
-    while(True):
-        # checks if they want to go back
-        if response == "back":
-            break
+# triggered when you draft a player to your team
+def AddToTeam(myTeam, response, All):
+    myTeam[response] = All[response]
+    print(f'{response} has been added to your team. Great Pick!')
 
-        # looks for player in players
-        if response in All:
-            myTeam[response] = All[response]
-            print(f'\nAdded {response} to your team. Great Pick!')
-            RemovePlayer(All, response)
-            break
-        
-        # couldn't find player, prompt again
-        else:
-            response = input("Could not find player, either retype player's full name as it appears on the list or type 'back' to go back\n")
-
+# simply deletes the player from the 'players' dictionary
 def RemovePlayer(All, response):
     del All[response]
+
+# triggered when a player is being drafted, mainly error checking user input
+def FindPlayer(All):
+    response = input("Please enter the name of the player drafted exactly as it appears on the list, or 'back' to go back\n")
+    while True:
+        if response == "back":
+            break
+    
+        if response not in All:
+            response = input("Couldn't seem to find that player. Please type their name exactly as it appears on the list, or 'back' to go back\n")
+        else:
+            break
+    
+    return response
 
 # get all the players
 players, QBs, RBs, WRs, TEs, Ks, DEFs = sort.RunAll()
 
+# make process to put all players into a sorted dictionary by composite
 bestAll = defaultdict(list)
 bestQBs = defaultdict(list)
 bestRBs = defaultdict(list)
@@ -122,21 +128,13 @@ myTeam = {}
 
 # This is where the program begins
 
+# intro
 print("\n\n\n\n**********Fantasy Football Ultimate Draft Algorithm**********")
 print("\n\nWelcome to the ultimate fantasy football draft algorithm! Let's get started.\n")
 
-print("Type 'all' to see the top 20 available players")
-print("Type 'qb' to see the top 10 available ")
-print("Type 'rb' to see the top 10 available ")
-print("Type 'wr' to see the top 10 available ")
-print("Type 'te' to see the top 10 available ")
-print("Type 'def' to see the top 10 available ")
-print("Type 'k' to see the top 10 available ")
+ShowCommands()
 
-print("\nWhen you're ready to draft a player or someone else has drafted a player, type 'draft'\n")
-
-print("Type 'q' to exit the live draft\n")
-
+# beginning of the loop (main menu)
 while(True):
 
     response = input("\nAwaiting input...  (type 'help' to see a list of commands')\n")
@@ -161,6 +159,8 @@ while(True):
         ShowPos(bestDEFs, response, players)
     elif response == "k":
         ShowPos(bestKs, response, players)
+
+    # draft block
     elif response == "draft":
         print("Was this player drafted by you or someone else?\n")
         print("Type: 'me' if you drafted the player")
@@ -168,8 +168,15 @@ while(True):
         
         response = input()
 
+        # drafted by me
         if response == "me":
-            AddToTeam(myTeam, players)
-        else:
-            response = input("Who just got drafted? Please type in the name of the player as it appears on list\n")
-            RemovePlayer(players, response)
+            response = FindPlayer(players)
+            if response != "back":
+                AddToTeam(myTeam, response, players)
+                RemovePlayer(players, response)
+
+        # drafted by someone else
+        elif response == "other":
+            response = FindPlayer(players)
+            if response != "back":
+                RemovePlayer(players, response)
