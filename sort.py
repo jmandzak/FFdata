@@ -69,7 +69,7 @@ class Player:
         
 
     def showStats(self):
-        print(f'{self.name:20}', end="")
+        print(f'{self.name:25}', end="")
         print(f'{self.position:<6}{self.proTeam:<6}{self.avgRank:<6}{self.tier:<6}{self.fullSos:<6}{self.composite:<8}')
     
 # all position classes are inherited from player so they have all the values in the player class
@@ -86,7 +86,7 @@ class QB(Player):
         self.rushTD = 0
     
     def showPosStats(self):
-        print(f'{self.name:20}', end="")
+        print(f'{self.name:25}', end="")
         print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.passYard:<8}{self.passTD:<6}{self.passInt:<4}{self.rushYard:<8}{self.rushTD:<6}{self.composite:<8}')
 
 class RB(Player):
@@ -101,7 +101,7 @@ class RB(Player):
         self.recTD = 0
 
     def showPosStats(self):
-        print(f'{self.name:20}', end="")
+        print(f'{self.name:25}', end="")
         print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.rushYard:<8}{self.rushTD:<6}{self.recTarget:<8}{self.receptions:<8}{self.recYard:<8}{self.recTD:<6}{self.composite:<8}')
 
 class WR(Player):
@@ -116,7 +116,7 @@ class WR(Player):
         self.rushTD = 0
 
     def showPosStats(self):
-        print(f'{self.name:20}', end="")
+        print(f'{self.name:25}', end="")
         print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.recTarget:<8}{self.receptions:<8}{self.recYard:<8}{self.recTD:<4}{self.composite:<8}')
 
 class TE(Player):
@@ -128,7 +128,7 @@ class TE(Player):
         self.recTD = 0
 
     def showPosStats(self):
-        print(f'{self.name:20}', end="")
+        print(f'{self.name:25}', end="")
         print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.recTarget:<8}{self.receptions:<8}{self.recYard:<8}{self.recTD:<4}{self.composite:<8}')
 
 class K(Player):
@@ -141,7 +141,7 @@ class K(Player):
         self.EPA = 0
 
     def showPosStats(self):
-        print(f'{self.name:20}', end="")
+        print(f'{self.name:25}', end="")
         print(f'{self.proTeam:<6}{self.avgRank:<8}{self.tier:<6}{self.fullSos:<6}{self.FGM:<4}{self.FGA:<4}{self.FGpercent:<6}{self.EPM:<4}{self.EPA:<4}{self.composite:<8}')
 
 class Defense(Player):

@@ -64,20 +64,19 @@ def FutureTiers(url, filename):
 
   # this find all gets the avg ranking of each player
   numbers = soup.find_all(class_='view-options ranks')
+
+  # this deletes the header row output
+  del numbers[0:6]
   
   avgs = []
 
   # this code block takes all objects in numbers and only keeps those that are the averages
-  # % 4 is used because there are 4 pieces of data per player, but I only want the average
-  i = 2
+  # % 6 is used because there are 6 pieces of data per player, but I only want the average
+  i = 4
   for avg in numbers:
-    if avg.text.replace('.','').isnumeric():
-      if i % 4 == 0:
-        avgs.append(avg.text)
-        i += 1
-      else:
-        i += 1
-
+    if i % 6 == 0:
+      avgs.append(avg.text)
+    i += 1
 
   # actually prints to file
   i = 0
@@ -113,14 +112,6 @@ def SoS(url, filename):
 
   rows = soup.find_all(class_='c')
   for row in rows:
-
-    """
-    #error checking
-    l = []
-    l.append(row.text)
-    print(l)
-    """
-    
     if row.text == '' or row.text == '\n':
       pass
     else:
