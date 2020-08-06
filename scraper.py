@@ -5,7 +5,7 @@ import os                       # used to delete files
 # function that gets stats of players from 2019-2020
 def PastStats(url, filename, position):
   
-  filename = "stats/" + filename
+  filename = "Stats/" + filename
   f = open(filename, "a+")        # opened in append mode because function is called for multiple pages of same position
   players = []
   mod = 0                         # figures out modulus for printing purposes
@@ -55,7 +55,7 @@ def FutureTiers(url, filename):
   page = requests.get(url)
   soup = BeautifulSoup(page.text, 'html.parser')
 
-  filename = "stats/" + filename
+  filename = "Stats/" + filename
 
   f = open(filename, "w")
 
@@ -104,7 +104,7 @@ def SoS(url, filename):
   soup = BeautifulSoup(page.text, 'html.parser')
 
   
-  filename = "stats/" + filename
+  filename = "Stats/" + filename
 
   f = open(filename, "w")
 
@@ -135,23 +135,23 @@ def SoS(url, filename):
 # make function calls here
 # first, QBs
 # also, this website has multiple pages, so we call the same function with multiple websites
-if os.path.exists("stats/QBs.txt"):
-  os.remove("stats/QBs.txt")
+if os.path.exists("Stats/QBs.txt"):
+  os.remove("Stats/QBs.txt")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=10&LeagueID=26955", "QBs.txt", "QB")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=10&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=1", "QBs.txt", "QB")
 
 
 # then RBs
-if os.path.exists("stats/RBs.txt"):
-  os.remove("stats/RBs.txt")
+if os.path.exists("Stats/RBs.txt"):
+  os.remove("Stats/RBs.txt")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=20&LeagueID=26955", "RBs.txt", "RB")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=20&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=1", "RBs.txt", "RB")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=20&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=2", "RBs.txt", "RB")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=20&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=3", "RBs.txt", "RB")
 
 # now WRs
-if os.path.exists("stats/WRs.txt"):
-  os.remove("stats/WRs.txt")
+if os.path.exists("Stats/WRs.txt"):
+  os.remove("Stats/WRs.txt")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=30&LeagueID=26955", "WRs.txt", "WR")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=30&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=1", "WRs.txt", "WR")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=30&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=2", "WRs.txt", "WR")
@@ -159,20 +159,20 @@ PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=30&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=4", "WRs.txt", "WR")
 
 # TEs
-if os.path.exists("stats/TEs.txt"):
-  os.remove("stats/TEs.txt")
+if os.path.exists("Stats/TEs.txt"):
+  os.remove("Stats/TEs.txt")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=40&LeagueID=26955", "TEs.txt", "TE")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=40&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=1", "TEs.txt", "TE")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=40&LeagueID=26955&order_by=FFPts&sort_order=DESC&cur_page=2", "TEs.txt", "TE")
 
 # Ks
-if os.path.exists("stats/Ks.txt"):
-  os.remove("stats/Ks.txt")
+if os.path.exists("Stats/Ks.txt"):
+  os.remove("Stats/Ks.txt")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=80&LeagueID=26955", "Ks.txt", "K")
 
 # DEFs
-if os.path.exists("stats/DEFs.txt"):
-  os.remove("stats/DEFs.txt")
+if os.path.exists("Stats/DEFs.txt"):
+  os.remove("Stats/DEFs.txt")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=99&LeagueID=26955", "DEFs.txt", "DEF")
 
 # List of Players 1-311 in tiers

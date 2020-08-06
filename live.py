@@ -1,6 +1,6 @@
-import sort
 from collections import OrderedDict
-from collections import defaultdict  
+from collections import defaultdict
+from data.statsio import RunAll
 
 # useful functions
 
@@ -106,7 +106,7 @@ def ShowMyTeam(myTeam):
 
 
 # get all the players
-players, QBs, RBs, WRs, TEs, Ks, DEFs = sort.RunAll()
+players, QBs, RBs, WRs, TEs, Ks, DEFs = RunAll()
 
 # make process to put all players into a sorted dictionary by composite
 bestAll = defaultdict(list)
