@@ -1,4 +1,4 @@
-import sort
+from data.statsio import RunAll
 from collections import OrderedDict     # to sort by key
 from collections import defaultdict     # to easily make a dictionary of lists
 
@@ -6,7 +6,7 @@ from collections import defaultdict     # to easily make a dictionary of lists
 # this acts essentially as a c++ multimap, storing all players
 # with keys as composite and vals as lists of players with that composite
 
-players, QBs, RBs, WRs, TEs, Ks, DEFs = sort.RunAll()
+players, QBs, RBs, WRs, TEs, Ks, DEFs = RunAll()
 
 bestAll = defaultdict(list)
 bestQBs = defaultdict(list)
