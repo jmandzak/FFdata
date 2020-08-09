@@ -77,15 +77,12 @@ def AddToTeam(myTeam, response, All, posMultiplier):
     # now we modify the composite of other available players based on that pick
     posMultiplier[All[response].position] += 0.2
 
-    for player in All.values():
-        player.composite *= posMultiplier[player.position]
-        player.composite = round(player.composite, 2)
-
     return myTeam
 
 # simply deletes the player from the 'players' dictionary
 def RemovePlayer(All, response):
-    del All[response]
+    if response in All:
+        del All[response]
 
 # triggered when a player is being drafted, mainly error checking user input
 def FindPlayer(All):
@@ -130,6 +127,12 @@ def RedoSort(allPlayers, position):
     newDict = OrderedDict(sorted(newDict.items()))
     return newDict
 
+def RedoComposite(posDict, posMultiplier):
+    for player in posDict.values():
+        player.composite *= posMultiplier[player.position]
+        player.composite = round(player.composite, 2)
+
+    return posDict
 
 def main():
     # get all the players
@@ -213,15 +216,34 @@ def main():
             if response == "me":
                 response = FindPlayer(players)
                 if response != "back":
+                    # draft the player
                     myTeam = AddToTeam(myTeam, response, players, posMultiplier)
+
+                    # remove the player
                     RemovePlayer(players, response)
+                    RemovePlayer(QBs, response)
+                    RemovePlayer(RBs, response)
+                    RemovePlayer(WRs, response)
+                    RemovePlayer(TEs, response)
+                    RemovePlayer(DEFs, response)
+                    RemovePlayer(Ks, response)
+
+                    # fix the composites
+                    players = RedoComposite(players, posMultiplier)
+                    QBs = RedoComposite(QBs, posMultiplier)
+                    RBs = RedoComposite(RBs, posMultiplier)
+                    WRs = RedoComposite(WRs, posMultiplier)
+                    TEs = RedoComposite(TEs, posMultiplier)
+                    DEFs = RedoComposite(DEFs, posMultiplier)
+                    Ks = RedoComposite(Ks, posMultiplier)
+
                     bestAll = RedoSort(players, "all")
-                    bestQBs = RedoSort(players, "QB")
-                    bestRBs = RedoSort(players, "RB")
-                    bestWRs = RedoSort(players, "WR")
-                    bestTEs = RedoSort(players, "TE")
-                    bestDEFs = RedoSort(players, "DEF")
-                    bestKs = RedoSort(players, "K")
+                    bestQBs = RedoSort(QBs, "QB")
+                    bestRBs = RedoSort(RBs, "RB")
+                    bestWRs = RedoSort(WRs, "WR")
+                    bestTEs = RedoSort(TEs, "TE")
+                    bestDEFs = RedoSort(DEFs, "DEF")
+                    bestKs = RedoSort(Ks, "K")
                     
 
             # drafted by someone else
