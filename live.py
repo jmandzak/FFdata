@@ -69,10 +69,17 @@ def ShowPos(best, pos, players):
             break
 
 # triggered when you draft a player to your team
-def AddToTeam(myTeam, response, All):
+def AddToTeam(myTeam, response, All, posMultiplier):
     myTeam[All[response].position].append(All[response])
 
     print(f'{response} has been added to your team. Great Pick!')
+
+    # now we modify the composite of other available players based on that pick
+    posMultiplier[All[response].position] += 0.2
+
+    for player in All.values():
+        player.composite *= posMultiplier[player.position]
+        player.composite = round(player.composite, 2)
 
     return myTeam
 
@@ -104,107 +111,127 @@ def ShowMyTeam(myTeam):
 
         print()
 
+def CreateOrderedDicts(allPlayers):
+    newDict = defaultdict(list)
 
-# get all the players
-players, QBs, RBs, WRs, TEs, Ks, DEFs = RunAll()
-
-# make process to put all players into a sorted dictionary by composite
-bestAll = defaultdict(list)
-bestQBs = defaultdict(list)
-bestRBs = defaultdict(list)
-bestWRs = defaultdict(list)
-bestTEs = defaultdict(list)
-bestKs = defaultdict(list)
-bestDEFs = defaultdict(list)
-
-for player in players.values():
-    bestAll[player.composite].append(player)
-for player in QBs.values():
-    bestQBs[player.composite].append(player)
-for player in RBs.values():
-    bestRBs[player.composite].append(player)
-for player in WRs.values():
-    bestWRs[player.composite].append(player)
-for player in TEs.values():
-    bestTEs[player.composite].append(player)
-for player in Ks.values():
-    bestKs[player.composite].append(player)
-for player in DEFs.values():
-    bestDEFs[player.composite].append(player)
-
-bestAll = OrderedDict(sorted(bestAll.items()))
-bestQBs = OrderedDict(sorted(bestQBs.items()))
-bestRBs = OrderedDict(sorted(bestRBs.items()))
-bestWRs = OrderedDict(sorted(bestWRs.items()))
-bestTEs = OrderedDict(sorted(bestTEs.items()))
-bestKs = OrderedDict(sorted(bestKs.items()))
-bestDEFs = OrderedDict(sorted(bestDEFs.items()))
-
-myTeam = defaultdict(list)
-
-myTeam = {
-    "QB": [],
-    "RB": [],
-    "WR": [],
-    "TE": [],
-    "DEF": [],
-    "K": []
-}
-
-# This is where the program begins
-
-# intro
-print("\n\n\n\n**********Fantasy Football Ultimate Draft Algorithm**********")
-print("\n\nWelcome to the ultimate fantasy football draft algorithm! Let's get started.\n")
-
-ShowCommands()
-
-# beginning of the loop (main menu)
-while(True):
-
-    response = input("\nAwaiting input...  (type 'help' to see a list of commands')\n")
-
-    if response == "q":
-        break
+    for player in allPlayers.values():
+        newDict[player.composite].append(player)
     
-    elif response == "help":
-        ShowCommands()
+    newDict = OrderedDict(sorted(newDict.items()))
+    return newDict
 
-    elif response == "all":
-        ShowAll(bestAll, response, players)
-    elif response == "qb":
-        ShowPos(bestQBs, response, players)
-    elif response == "rb":
-        ShowPos(bestRBs, response, players)
-    elif response == "wr":
-        ShowPos(bestWRs, response, players)
-    elif response == "te":
-        ShowPos(bestTEs, response, players)
-    elif response == "def":
-        ShowPos(bestDEFs, response, players)
-    elif response == "k":
-        ShowPos(bestKs, response, players)
+def RedoSort(allPlayers, position):
+    newDict = defaultdict(list)
 
-    # draft block
-    elif response == "draft":
-        print("Was this player drafted by you or someone else?\n")
-        print("Type: 'me' if you drafted the player")
-        print("Type: 'other' if someone else drafted the player")
+    for player in allPlayers.values():
+        if player.position == position or position == "all":
+            newDict[player.composite].append(player)
         
-        response = input()
+    newDict = OrderedDict(sorted(newDict.items()))
+    return newDict
 
-        # drafted by me
-        if response == "me":
-            response = FindPlayer(players)
-            if response != "back":
-                myTeam = AddToTeam(myTeam, response, players)
-                RemovePlayer(players, response)
 
-        # drafted by someone else
-        elif response == "other":
-            response = FindPlayer(players)
-            if response != "back":
-                RemovePlayer(players, response)
+def main():
+    # get all the players
+    players, QBs, RBs, WRs, TEs, Ks, DEFs = RunAll()
 
-    elif response == "team":
-        ShowMyTeam(myTeam)
+    # make process to put all players into a sorted dictionary by composite
+    bestAll = CreateOrderedDicts(players)
+    bestQBs = CreateOrderedDicts(QBs)
+    bestRBs = CreateOrderedDicts(RBs)
+    bestWRs = CreateOrderedDicts(WRs)
+    bestTEs = CreateOrderedDicts(TEs)
+    bestKs = CreateOrderedDicts(Ks)
+    bestDEFs = CreateOrderedDicts(DEFs)
+
+    myTeam = defaultdict(list)
+
+    # Initializes dictionary of team to have 0 players at each position
+    myTeam = {
+        "QB": [],
+        "RB": [],
+        "WR": [],
+        "TE": [],
+        "DEF": [],
+        "K": []
+    }
+
+    # This dictionary will act as a multiplier to change composite
+    # values of available players based on who's in the user's team
+    posMultiplier = {
+        "QB": 1,
+        "RB": 1,
+        "WR": 1,
+        "TE": 1,
+        "DEF": 1,
+        "K": 1
+    }
+
+    # This is where the program begins
+
+    # intro
+    print("\n\n\n\n**********Fantasy Football Ultimate Draft Algorithm**********")
+    print("\n\nWelcome to the ultimate fantasy football draft algorithm! Let's get started.\n")
+
+    ShowCommands()
+
+    # beginning of the loop (main menu)
+    while(True):
+
+        response = input("\nAwaiting input...  (type 'help' to see a list of commands')\n")
+
+        if response == "q":
+            break
+        
+        elif response == "help":
+            ShowCommands()
+
+        elif response == "all":
+            ShowAll(bestAll, response, players)
+        elif response == "qb":
+            ShowPos(bestQBs, response, players)
+        elif response == "rb":
+            ShowPos(bestRBs, response, players)
+        elif response == "wr":
+            ShowPos(bestWRs, response, players)
+        elif response == "te":
+            ShowPos(bestTEs, response, players)
+        elif response == "def":
+            ShowPos(bestDEFs, response, players)
+        elif response == "k":
+            ShowPos(bestKs, response, players)
+
+        # draft block
+        elif response == "draft":
+            print("Was this player drafted by you or someone else?\n")
+            print("Type: 'me' if you drafted the player")
+            print("Type: 'other' if someone else drafted the player")
+            
+            response = input()
+
+            # drafted by me
+            if response == "me":
+                response = FindPlayer(players)
+                if response != "back":
+                    myTeam = AddToTeam(myTeam, response, players, posMultiplier)
+                    RemovePlayer(players, response)
+                    bestAll = RedoSort(players, "all")
+                    bestQBs = RedoSort(players, "QB")
+                    bestRBs = RedoSort(players, "RB")
+                    bestWRs = RedoSort(players, "WR")
+                    bestTEs = RedoSort(players, "TE")
+                    bestDEFs = RedoSort(players, "DEF")
+                    bestKs = RedoSort(players, "K")
+                    
+
+            # drafted by someone else
+            elif response == "other":
+                response = FindPlayer(players)
+                if response != "back":
+                    RemovePlayer(players, response)
+
+        elif response == "team":
+            ShowMyTeam(myTeam)
+
+if __name__ == '__main__':
+    main()
