@@ -77,8 +77,6 @@ def AddToTeam(myTeam, response, All, posMultiplier):
     # now we modify the composite of other available players based on that pick
     posMultiplier[All[response].position] += 0.2
 
-    return myTeam
-
 # simply deletes the player from the 'players' dictionary
 def RemovePlayer(All, response):
     if response in All:
@@ -131,8 +129,6 @@ def RedoComposite(posDict, posMultiplier):
     for player in posDict.values():
         player.composite *= posMultiplier[player.position]
         player.composite = round(player.composite, 2)
-
-    return posDict
 
 def main():
     # get all the players
@@ -204,6 +200,9 @@ def main():
         elif response == "k":
             ShowPos(bestKs, response, players)
 
+        elif response == "team":
+            ShowMyTeam(myTeam)
+
         # draft block
         elif response == "draft":
             print("Was this player drafted by you or someone else?\n")
@@ -217,7 +216,7 @@ def main():
                 response = FindPlayer(players)
                 if response != "back":
                     # draft the player
-                    myTeam = AddToTeam(myTeam, response, players, posMultiplier)
+                    AddToTeam(myTeam, response, players, posMultiplier)
 
                     # remove the player
                     RemovePlayer(players, response)
@@ -229,13 +228,13 @@ def main():
                     RemovePlayer(Ks, response)
 
                     # fix the composites
-                    players = RedoComposite(players, posMultiplier)
-                    QBs = RedoComposite(QBs, posMultiplier)
-                    RBs = RedoComposite(RBs, posMultiplier)
-                    WRs = RedoComposite(WRs, posMultiplier)
-                    TEs = RedoComposite(TEs, posMultiplier)
-                    DEFs = RedoComposite(DEFs, posMultiplier)
-                    Ks = RedoComposite(Ks, posMultiplier)
+                    RedoComposite(players, posMultiplier)
+                    RedoComposite(QBs, posMultiplier)
+                    RedoComposite(RBs, posMultiplier)
+                    RedoComposite(WRs, posMultiplier)
+                    RedoComposite(TEs, posMultiplier)
+                    RedoComposite(DEFs, posMultiplier)
+                    RedoComposite(Ks, posMultiplier)
 
                     bestAll = RedoSort(players, "all")
                     bestQBs = RedoSort(QBs, "QB")
@@ -252,8 +251,7 @@ def main():
                 if response != "back":
                     RemovePlayer(players, response)
 
-        elif response == "team":
-            ShowMyTeam(myTeam)
+        
 
 if __name__ == '__main__':
     main()
