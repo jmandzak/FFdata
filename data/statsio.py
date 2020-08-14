@@ -44,7 +44,7 @@ posMultiplier = {
     "WR": 1,
     "TE": 1.15,
     "DEF": 1.3,
-    "K": 1.3,
+    "K": 3.0,
 }
 
 # this function reads QBs.txt and sorts stats from 2019-2020 Quarterbacks
@@ -554,6 +554,9 @@ def ReadTiers(filename, players, QBs, RBs, WRs, TEs, Ks, DEFs):
                 players[name].projRank = rank
                 players[name].tier = tier
                 players[name].avgRank = avg
+                
+                if name == "Tyler Bass":
+                    players[name].position = 'K'
             
             # try removing suffix
             elif len(name.split()) == 3:
@@ -590,6 +593,9 @@ def ReadTiers(filename, players, QBs, RBs, WRs, TEs, Ks, DEFs):
                 p.projRank = rank
                 p.tier = tier
                 p.avgRank = avg
+                
+                if name == "Tyler Bass":
+                    p.position = 'K'
                 players[p.name] = p
 
 

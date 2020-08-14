@@ -9,6 +9,8 @@ class Team():
     def __init__(self):
         self.teamName = ""
         self.draftPosition = 0
+
+        self.selections = {}
         
         self.posMultiplier = {
             "QB": 1,
@@ -44,6 +46,14 @@ def ShowCommands():
     print("To see your own team, type 'team'\n")
 
     print("Type 'q' to exit the live draft\n")
+
+
+def showPostDraftCommands():
+    print("Type 'myteam' to see your own team")
+    print("Type 'all' to see everyone's team")
+    print("Type 'mypicks' to see your own picks")
+    print("Type 'allpicks' to see the entire draft history")
+    print("Type 'q' to quit")
 
 
 def ShowStatLine(position):
@@ -124,24 +134,61 @@ def AssignPicksToTeam(draftOrder, draftPosition, teamName, numTeams):
         draftPosition = numTeams - draftPosition + 1
 
 
-def UserPick(selection, allPlayers, roster, posMultiplier):
-    roster[allPlayers[selection].position].append(allPlayers[selection])
+def UserPick(selection, allPlayers, team, currentPick, draftLog):
+    # add to roster
+    team.roster[allPlayers[selection].position].append(allPlayers[selection])
+
+    # add to team selections
+    team.selections[currentPick] = selection
+
+    # add to overall draft log
+    draftLog[currentPick] = selection
 
     print(f'\n***{selection}*** has been added to your team. Great pick!\n')
 
-    posMultiplier[allPlayers[selection].position] += 0.2
+    team.posMultiplier[allPlayers[selection].position] += 0.2
 
 
-def CpuPick(bestPlayers, roster, posMultiplier, teamName):
-    # find best available player
-    bestAvailable = next(iter(bestPlayers.values()))[0]
-    roster[bestAvailable.position].append(bestAvailable)
+def CpuPick(bestPlayers, team, currentPick, draftLog):
+    selection = ""
+    possibleOptions = []
 
-    print(f'\nThe pick is in. {teamName} has selected ***{bestAvailable.name}***.\n')
+    # find best available player, add to roster
+    # special case to make sure the CPU has a kicker
+    if team.posMultiplier["K"] == 1 and len(team.selections) == 14:
+        for playerList in bestPlayers.values():
+            for player in playerList:
+                if player.position == "K":
+                    selection = player
+                    break
+            if selection != "":
+                break
+    else:
+        i = 0
+        for playerList in bestPlayers.values():
+            for player in playerList:
+                possibleOptions.append(player)
+                i += 1
 
-    posMultiplier[bestAvailable.position] += 0.2
+            if i == 3:
+                break
+        
+        selection = possibleOptions[randint(0, 2)]
+    
+    # add team to roster
+    team.roster[selection.position].append(selection)
 
-    return bestAvailable.name
+    # add to team's selections
+    team.selections[currentPick] = selection.name
+
+    # add to draft log
+    draftLog[currentPick] = selection.name
+
+    print(f'\nThe pick is in. {team.teamName} has selected ***{selection.name}***.\n')
+
+    team.posMultiplier[selection.position] += 0.2
+
+    return selection.name
 
 
 
@@ -191,6 +238,7 @@ def main():
     teams = {}              # dictionary of all the teams in the draft
     draftOrder = {}         # key = number of the pick, val = team who owns that pick
     masterComposites = {}   # This holds all the players original composites in a dictionary
+    draftLog = {}           # This holds the entire draft log, showing who was picked at each spot
 
     # some boilerplate work before IO gets started
     
@@ -309,7 +357,7 @@ def main():
                     response = FindPlayer(players)
 
                     # draft the player
-                    UserPick(response, players, teams[draftingTeam].roster, teams[draftingTeam].posMultiplier)
+                    UserPick(response, players, teams[draftingTeam], currentPick, draftLog)
 
                     # remove the player
                     RemovePlayer(players, response)
@@ -335,14 +383,13 @@ def main():
         # handle CPU pick
         else:
             print(f'\n{draftingTeam} is on the clock...')
-            sleep(2)
 
             # recalculate composite of best available players and re-sort
             RedoComposite(players, teams[draftingTeam].posMultiplier)
             bestAll = RedoSort(players, "all")
 
             # draft the player
-            selection = CpuPick(bestAll, teams[draftingTeam].roster, teams[draftingTeam].posMultiplier, draftingTeam)
+            selection = CpuPick(bestAll, teams[draftingTeam], currentPick, draftLog)
 
             # remove the player
             RemovePlayer(players, selection)
@@ -359,12 +406,10 @@ def main():
         currentPick += 1
 
     print("\n\n*****Congratulations! You've completed the mock draft!*****\n")
-    print("Type 'myteam' to see your own team")
-    print("Type 'all' to see everyone's team")
-    print("Type 'q' to quit")
+    showPostDraftCommands()
 
     while(True):
-        response = input("\nAwaiting input...\n")
+        response = input("\nAwaiting input... (type 'help' to see available commands)\n")
 
         if response == "q":
             break
@@ -377,6 +422,17 @@ def main():
                 print(f'{team.teamName}\'s team:')
                 ShowTeam(team.roster)
                 print('\n')
+        
+        elif response == "mypicks":
+            for pickNumber, selection in teams["Your Team"].selections.items():
+                print(f'{pickNumber:<4}{selection}')
+        
+        elif response == "allpicks":
+            for pickNumber, selection in draftLog.items():
+                print(f'{pickNumber:<4}{selection}')
+
+        elif response == "help":
+            showPostDraftCommands()
         
 
 
