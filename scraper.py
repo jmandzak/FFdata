@@ -175,8 +175,11 @@ if os.path.exists("Stats/DEFs.txt"):
   os.remove("Stats/DEFs.txt")
 PastStats("https://fftoday.com/stats/playerstats.php?Season=2019&GameWeek=&PosID=99&LeagueID=26955", "DEFs.txt", "DEF")
 
-# List of Players 1-311 in tiers
+# list of Players 1-311 in tiers
 FutureTiers("https://www.fantasypros.com/nfl/rankings/consensus-cheatsheets.php", "Tiers.txt")
+
+# for PPR all players
+FutureTiers("https://www.fantasypros.com/nfl/rankings/ppr-cheatsheets.php", "PPR_Tiers.txt")
 
 # this website also does tiers by position, so the next few calls are for that
 FutureTiers("https://www.fantasypros.com/nfl/rankings/qb-cheatsheets.php", "QB_Tiers.txt")
@@ -185,6 +188,11 @@ FutureTiers("https://www.fantasypros.com/nfl/rankings/wr-cheatsheets.php", "WR_T
 FutureTiers("https://www.fantasypros.com/nfl/rankings/te-cheatsheets.php", "TE_Tiers.txt")
 FutureTiers("https://www.fantasypros.com/nfl/rankings/k-cheatsheets.php", "K_Tiers.txt")
 FutureTiers("https://www.fantasypros.com/nfl/rankings/dst-cheatsheets.php", "DEF_Tiers.txt")
+
+# for PPR
+FutureTiers("https://www.fantasypros.com/nfl/rankings/ppr-rb-cheatsheets.php", "PPR_RB_Tiers.txt")
+FutureTiers("https://www.fantasypros.com/nfl/rankings/ppr-wr-cheatsheets.php", "PPR_WR_Tiers.txt")
+FutureTiers("https://www.fantasypros.com/nfl/rankings/ppr-te-cheatsheets.php", "PPR_TE_Tiers.txt")
 
 # Below will be strength of schedule websites, but they're currently broken
 # so will be added later
