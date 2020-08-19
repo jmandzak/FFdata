@@ -1,8 +1,71 @@
 from collections import OrderedDict
 from collections import defaultdict
-from data.statsio import RunAll
+import data.statsio as parse
 
 # useful functions
+
+# function that runs everything from statsio
+def Initialize(ppr):
+    # fixes position multiplier based on PPR
+    if ppr:
+        parse.posMultiplier['WR'] = 0.95
+        parse.posMultiplier['TE'] = 1.1
+
+    # creates empty players dictionary
+    players = {}
+
+    # creates empty teams dictionary
+    teams = {}
+
+    # calls all functions to fill in dictionaries
+
+    # strength of schedule
+    teams = parse.GetSos("Stats/Sos_Full.txt", teams, "full")
+    teams = parse.GetSos("Stats/Sos_Season.txt", teams, "season")
+    teams = parse.GetSos("Stats/Sos_Playoff.txt", teams, "playoff")
+
+    # past stats
+    players, QBs = parse.ReadQB(players)
+    players, RBs = parse.ReadRB(players)
+    players, WRs = parse.ReadWR(players)
+    players, TEs = parse.ReadTE(players)
+    players, Ks = parse.ReadK(players)
+    players, DEFs = parse.ReadDEF(players)
+
+    # position specific tiers and rank
+    # 3 positions are different based on if the league is PPR
+    if ppr:
+        players, RBs = parse.PosTiers("Stats/PPR_RB_Tiers.txt", players, RBs, "RB")
+        players, WRs = parse.PosTiers("Stats/PPR_WR_Tiers.txt", players, WRs, "WR")
+        players, TEs = parse.PosTiers("Stats/PPR_TE_Tiers.txt", players, TEs, "TE")
+    else:
+        players, RBs = parse.PosTiers("Stats/RB_Tiers.txt", players, RBs, "RB")
+        players, WRs = parse.PosTiers("Stats/WR_Tiers.txt", players, WRs, "WR")
+        players, TEs = parse.PosTiers("Stats/TE_Tiers.txt", players, TEs, "TE")
+
+    players, QBs = parse.PosTiers("Stats/QB_Tiers.txt", players, QBs, "QB")
+    players, Ks = parse.PosTiers("Stats/K_Tiers.txt", players, Ks, "K")
+    players, DEFs = parse.DEFTiers(players, DEFs)
+
+    # non position specific rank
+    if ppr:
+        players, QBs, RBs, WRs, TEs, Ks, DEFs = parse.ReadTiers("Stats/PPR_Tiers.txt", players, QBs, RBs, WRs, TEs, Ks, DEFs)
+    else:    
+        players, QBs, RBs, WRs, TEs, Ks, DEFs = parse.ReadTiers("Stats/Tiers.txt", players, QBs, RBs, WRs, TEs, Ks, DEFs)
+
+    # assigning strength of schedule values
+    players, QBs, RBs, WRs, TEs, Ks, DEFs = parse.AssignSos(players, QBs, RBs, WRs, TEs, Ks, DEFs, teams)
+
+    # calculate composite for each player in each dict
+    players = parse.CalcComposite(players)
+    QBs = parse.CalcComposite(QBs)
+    RBs = parse.CalcComposite(RBs)
+    WRs = parse.CalcComposite(WRs)
+    TEs = parse.CalcComposite(TEs)
+    DEFs = parse.CalcComposite(DEFs)
+    Ks = parse.CalcComposite(Ks)
+
+    return players, QBs, RBs, WRs, TEs, Ks, DEFs
 
 # triggered at the beginning of the program and on 'help' command to remind the user what they can do
 def ShowCommands():
@@ -131,8 +194,19 @@ def RedoComposite(posDict, posMultiplier):
         player.composite = round(player.composite, 2)
 
 def main():
+    # intro
+    print("\n\n\n\n**********Fantasy Football Ultimate Draft Algorithm**********")
+    print("\n\nWelcome to the ultimate fantasy football draft algorithm! Let's get started.\n")
+
+    # figures out what data to parse
+    response = input("Before we start, is this a ppr league?\ntype 'y' for yes\ntype 'n' for no\n")
+    if response == 'y':
+        ppr = True
+    else:
+        ppr = False
+
     # get all the players
-    players, QBs, RBs, WRs, TEs, Ks, DEFs = RunAll()
+    players, QBs, RBs, WRs, TEs, Ks, DEFs = Initialize(ppr)
 
     # make process to put all players into a sorted dictionary by composite
     bestAll = CreateOrderedDicts(players)
@@ -167,10 +241,6 @@ def main():
     }
 
     # This is where the program begins
-
-    # intro
-    print("\n\n\n\n**********Fantasy Football Ultimate Draft Algorithm**********")
-    print("\n\nWelcome to the ultimate fantasy football draft algorithm! Let's get started.\n")
 
     ShowCommands()
 
