@@ -68,13 +68,15 @@ def ReadQB(players):
             
             # special case here since some player names are long
             if(len(words) == 16):
-                p.name = words[1] + ' ' + words[2] + ' ' + words[3]
+                name = words[1] + ' ' + words[2]
                 
                 # this deletes a value so the rest of the read can go normally
                 del words[3]
             else:
-                p.name = words[1] + ' ' + words[2]
+                name = words[1] + ' ' + words[2]
 
+            p.name = name.replace('.', '')
+        
             p.proTeam = words[3]
             p.games = words[4]
             p.pastPoints = words[13]
@@ -120,13 +122,14 @@ def ReadRB(players):
             
             # special case here since some player names are long
             if(len(words) == 15):
-                p.name = words[1] + ' ' + words[2] + ' ' + words[3]
+                name = words[1] + ' ' + words[2]
                 
                 # this deletes a value so the rest of the read can go normally
                 del words[3]
             else:
-                p.name = words[1] + ' ' + words[2]
+                name = words[1] + ' ' + words[2]
             
+            p.name = name.replace('.', '')
             p.proTeam = words[3]
             p.games = words[4]
             p.pastPoints = words[12]
@@ -172,13 +175,14 @@ def ReadWR(players):
 
             # special case here since some player names are long
             if(len(words) == 15):
-                p.name = words[1] + ' ' + words[2] + ' ' + words[3]
+                name = words[1] + ' ' + words[2]
                 
                 # this deletes a value so the rest of the read can go normally
                 del words[3]
             else:
-                p.name = words[1] + ' ' + words[2]
+                name = words[1] + ' ' + words[2]
 
+            p.name = name.replace('.', '')
             p.proTeam = words[3]
             p.games = words[4]
             p.pastPoints = words[12]
@@ -221,13 +225,14 @@ def ReadTE(players):
             
             # special case here since some player names are long
             if(len(words) == 12):
-                p.name = words[1] + ' ' + words[2] + ' ' + words[3]
+                name = words[1] + ' ' + words[2]
                 
                 # this deletes a value so the rest of the read can go normally
                 del words[3]
             else:
-                p.name = words[1] + ' ' + words[2]
+                name = words[1] + ' ' + words[2]
 
+            p.name = name.replace('.', '')
             p.proTeam = words[3]
             p.games = words[4]
             p.pastPoints = words[9]
@@ -267,13 +272,14 @@ def ReadK(players):
             
             # special case here since some player names are long
             if(len(words) == 13):
-                p.name = words[1] + ' ' + words[2] + ' ' + words[3]
+                name = words[1] + ' ' + words[2]
                 
                 # this deletes a value so the rest of the read can go normally
                 del words[3]
             else:
-                p.name = words[1] + ' ' + words[2]
+                name = words[1] + ' ' + words[2]
 
+            p.name = name.replace('.', '')
             p.team = words[3]
             p.games = words[4]
             p.pastPoints = words[10]
@@ -374,9 +380,11 @@ def PosTiers(filename, players, posdict, position):
 
             # assign name
             if len(words) == 6:
-                name = words[2] + ' ' + words[3] + ' ' + words[4]
+                name = words[2] + ' ' + words[3]
             else:
                 name = words[2] + ' ' + words[3]
+
+            name = name.replace('.', '')
 
             # see if player is in dict already
             if name in players:
@@ -539,10 +547,12 @@ def ReadTiers(filename, players, QBs, RBs, WRs, TEs, Ks, DEFs):
             if '(' in line:
                 name = words[len(words)-1]
             elif len(words) == 6:
-                name = words[2] + ' ' + words[3] + ' ' + words[4]
+                name = words[2] + ' ' + words[3]
                 del words[4]
             else:
                 name = words[2] + ' ' + words[3]
+
+            name.replace('.', '')
             
             # get rid of ( ) in defenses name
             if '(' in name:
