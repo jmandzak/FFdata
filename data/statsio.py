@@ -39,8 +39,8 @@ abbr = {
 
 # This dictionary acts as a look up table for position multiplier for composite calculations
 posMultiplier = {
-    "QB": 1.1,
-    "RB": 0.90,
+    "QB": 1.3,
+    "RB": 0.85,
     "WR": 1,
     "TE": 1.15,
     "DEF": 1.3,

@@ -190,8 +190,9 @@ def RedoSort(allPlayers, position):
 
 def RedoComposite(posDict, posMultiplier):
     for player in posDict.values():
-        player.composite *= posMultiplier[player.position]
-        player.composite = round(player.composite, 2)
+        if player.position != '':
+            player.composite *= posMultiplier[player.position]
+            player.composite = round(player.composite, 2)
 
 def main():
     # intro
@@ -241,7 +242,6 @@ def main():
     }
 
     # This is where the program begins
-
     ShowCommands()
 
     # beginning of the loop (main menu)
