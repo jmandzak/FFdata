@@ -77,7 +77,8 @@ def Initialize(ppr):
 
 # triggered at the beginning of the program and on 'help' command to remind the user what they can do
 def ShowCommands():
-    print("Type 'all' to see the top 20 available players")
+    print("Type 'all' to see the top 20 players you should pick")
+    print("Type 'best' to see the top 20 players available")
     print("Type 'qb' to see the top 10 available ")
     print("Type 'rb' to see the top 10 available ")
     print("Type 'wr' to see the top 10 available ")
@@ -105,7 +106,7 @@ def ShowStatLine(position):
 
     return correctStats[position]
 
-# function to show top 20 available players
+# function to show top 20 players user should pick
 def ShowAll(bestAll, response, players):
     i = 1
     print(ShowStatLine(response))
@@ -169,7 +170,7 @@ def RemovePlayer(All, response):
     if response in All:
         del All[response]
 
-def printOptions(players, options, position, All):
+def PrintOptions(players, options, position, All):
     i = 1
 
     for playerList in players.values():
@@ -187,12 +188,12 @@ def FindPlayer(All, bestQBs, bestRBs, bestWRs, bestTEs, bestDEFs, bestKs):
     options = {}
 
     # show top 5 players at each position
-    printOptions(bestQBs, options, 'q', All)
-    printOptions(bestRBs, options, 'r', All)
-    printOptions(bestWRs, options, 'w', All)
-    printOptions(bestTEs, options, 't', All)
-    printOptions(bestDEFs, options, 'd', All)
-    printOptions(bestKs, options, 'k', All)
+    PrintOptions(bestQBs, options, 'q', All)
+    PrintOptions(bestRBs, options, 'r', All)
+    PrintOptions(bestWRs, options, 'w', All)
+    PrintOptions(bestTEs, options, 't', All)
+    PrintOptions(bestDEFs, options, 'd', All)
+    PrintOptions(bestKs, options, 'k', All)
 
     # printing out players
     
@@ -263,6 +264,10 @@ def RedoComposite(posDict, posMultiplier, originalComposite):
             player.composite *= posMultiplier[player.position]
             player.composite = round(player.composite, 2)
 
+def ResetComposite(bestAll, originalComposite):
+    for player in bestAll.values():
+        player.composite = originalComposite[player.name]
+
 def main():
     # intro
     print("\n\n\n\n**********Fantasy Football Ultimate Draft Algorithm**********")
@@ -328,6 +333,16 @@ def main():
         
         elif response == "help":
             ShowCommands()
+
+        elif response == "best":
+            ResetComposite(players, originalComposites)
+            bestAll = RedoSort(players, "all")
+
+            response = "all"
+            ShowAll(bestAll, response, players)
+            
+            RedoComposite(players, posMultiplier, originalComposites)
+            bestAll = RedoSort(players, "all")
 
         elif response == "all":
             ShowAll(bestAll, response, players)
