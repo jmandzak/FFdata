@@ -145,15 +145,54 @@ def RemovePlayer(All, response):
     if response in All:
         del All[response]
 
+def printOptions(players, options, position, All):
+    i = 1
+
+    for playerList in players.values():
+        for p in playerList:
+            if p.name in All:
+                print(position + str(i) + ". " + p.name)
+                options[position + str(i)] = p.name
+                i += 1
+        if i == 6:
+            break
+
+    print()
+
 # triggered when a player is being drafted, mainly error checking user input
-def FindPlayer(All):
-    response = input("Please enter the name of the player drafted exactly as it appears on the list, or 'back' to go back\n")
+def FindPlayer(All, bestQBs, bestRBs, bestWRs, bestTEs, bestDEFs, bestKs):
+    options = {}
+
+    # show top 5 players at each position
+    print("QBs:")
+    printOptions(bestQBs, options, 'q', All)
+    print("RBs:")
+    printOptions(bestRBs, options, 'r', All)
+    print("WRs:")
+    printOptions(bestWRs, options, 'w', All)
+    print("TEs:")
+    printOptions(bestTEs, options, 't', All)
+    print("DEFs:")
+    printOptions(bestDEFs, options, 'd', All)
+    print("Ks:")
+    printOptions(bestKs, options, 'k', All)
+
+    print("If you see the player drafted above, please type the letter associated with the position (i.e. 'q' for quarterback, 'r' for runningback, etc), followed by the number")
+    print(f'For example, to draft {options["q1"]} please type \'q1\', or \'r2\' to draft {options["r2"]}.\n')
+    print("If you do not see the player, please type the player's name exactly as it appears in this program\n")
+    print("if you would like to go back, type 'back'")
+
+    response = input()
+
     while True:
         if response == "back":
             break
-    
-        if response not in All:
-            response = input("Couldn't seem to find that player. Please type their name exactly as it appears on the list, or 'back' to go back\n")
+
+        if response in options:
+            response = options[response]
+            break
+        elif response not in All:
+            response = input("Couldn't seem to find that player. Please type their name exactly as it appears on the list, or the position letter with number, or 'back' to go back\n")
         else:
             break
     
@@ -283,7 +322,7 @@ def main():
 
             # drafted by me
             if response == "me":
-                response = FindPlayer(players)
+                response = FindPlayer(players, bestQBs, bestRBs, bestWRs, bestTEs, bestDEFs, bestKs)
                 if response != "back":
                     # draft the player
                     AddToTeam(myTeam, response, players, posMultiplier)
@@ -317,7 +356,7 @@ def main():
 
             # drafted by someone else
             elif response == "other":
-                response = FindPlayer(players)
+                response = FindPlayer(players, bestQBs, bestRBs, bestWRs, bestTEs, bestDEFs, bestKs)
                 if response != "back":
                     RemovePlayer(players, response)
 
