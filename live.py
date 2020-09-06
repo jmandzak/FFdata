@@ -2,6 +2,14 @@ from collections import OrderedDict
 from collections import defaultdict
 import data.statsio as parse
 
+# some global constants for math purposes
+QB_INCREMENT = [0.2, 0.5, 1, 1, 1, 1, 1]
+RB_INCREMENT = [0, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5]
+WR_INCREMENT = [0, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5]
+TE_INCREMENT = [0.2, 0.5, 1, 1, 1, 1, 1]
+DEF_INCREMENT = [10, 10, 10, 10, 10, 10, 10]
+K_INCREMENT = [10, 10, 10, 10, 10, 10, 10]
+
 # useful functions
 
 # function that runs everything from statsio
@@ -138,7 +146,23 @@ def AddToTeam(myTeam, response, All, posMultiplier):
     print(f'{response} has been added to your team. Great Pick!')
 
     # now we modify the composite of other available players based on that pick
-    posMultiplier[All[response].position] += 0.2
+    if All[response].position == "QB":
+        posMultiplier["QB"] += QB_INCREMENT[len(myTeam["QB"])-1]
+    
+    if All[response].position == "RB":
+        posMultiplier["RB"] += RB_INCREMENT[len(myTeam["RB"])-1]
+    
+    if All[response].position == "WR":
+        posMultiplier["WR"] += WR_INCREMENT[len(myTeam["WR"])-1]
+    
+    if All[response].position == "TE":
+        posMultiplier["TE"] += TE_INCREMENT[len(myTeam["TE"])-1]
+    
+    if All[response].position == "DEF":
+        posMultiplier["DEF"] += DEF_INCREMENT[len(myTeam["DEF"])-1]
+    
+    if All[response].position == "K":
+        posMultiplier["K"] += K_INCREMENT[len(myTeam["K"])-1]
 
 # simply deletes the player from the 'players' dictionary
 def RemovePlayer(All, response):
@@ -227,9 +251,10 @@ def RedoSort(allPlayers, position):
     newDict = OrderedDict(sorted(newDict.items()))
     return newDict
 
-def RedoComposite(posDict, posMultiplier):
+def RedoComposite(posDict, posMultiplier, originalComposite):
     for player in posDict.values():
         if player.position != '':
+            player.composite = originalComposite[player.name]
             player.composite *= posMultiplier[player.position]
             player.composite = round(player.composite, 2)
 
@@ -279,6 +304,11 @@ def main():
         "DEF": 1,
         "K": 1
     }
+
+    # creates dictionary of original composites to prevent against continuous compounding
+    originalComposites = {}
+    for p in players.values():
+        originalComposites[p.name] = p.composite
 
     # This is where the program begins
     ShowCommands()
@@ -337,13 +367,13 @@ def main():
                     RemovePlayer(Ks, response)
 
                     # fix the composites
-                    RedoComposite(players, posMultiplier)
-                    RedoComposite(QBs, posMultiplier)
-                    RedoComposite(RBs, posMultiplier)
-                    RedoComposite(WRs, posMultiplier)
-                    RedoComposite(TEs, posMultiplier)
-                    RedoComposite(DEFs, posMultiplier)
-                    RedoComposite(Ks, posMultiplier)
+                    RedoComposite(players, posMultiplier, originalComposites)
+                    RedoComposite(QBs, posMultiplier, originalComposites)
+                    RedoComposite(RBs, posMultiplier, originalComposites)
+                    RedoComposite(WRs, posMultiplier, originalComposites)
+                    RedoComposite(TEs, posMultiplier, originalComposites)
+                    RedoComposite(DEFs, posMultiplier, originalComposites)
+                    RedoComposite(Ks, posMultiplier, originalComposites)
 
                     bestAll = RedoSort(players, "all")
                     bestQBs = RedoSort(QBs, "QB")
