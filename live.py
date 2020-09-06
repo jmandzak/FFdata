@@ -3,10 +3,10 @@ from collections import defaultdict
 import data.statsio as parse
 
 # some global constants for math purposes
-QB_INCREMENT = [0.2, 0.5, 1, 1, 1, 1, 1]
+QB_INCREMENT = [0.4, 0.5, 1, 1, 1, 1, 1]
 RB_INCREMENT = [0, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5]
-WR_INCREMENT = [0, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5]
-TE_INCREMENT = [0.2, 0.5, 1, 1, 1, 1, 1]
+WR_INCREMENT = [0.2, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5]
+TE_INCREMENT = [0.7, 1, 1, 1, 1, 1, 1]
 DEF_INCREMENT = [10, 10, 10, 10, 10, 10, 10]
 K_INCREMENT = [10, 10, 10, 10, 10, 10, 10]
 
@@ -175,7 +175,6 @@ def printOptions(players, options, position, All):
     for playerList in players.values():
         for p in playerList:
             if p.name in All:
-                print(position + str(i) + ". " + p.name)
                 options[position + str(i)] = p.name
                 i += 1
         if i == 6:
@@ -188,18 +187,24 @@ def FindPlayer(All, bestQBs, bestRBs, bestWRs, bestTEs, bestDEFs, bestKs):
     options = {}
 
     # show top 5 players at each position
-    print("QBs:")
     printOptions(bestQBs, options, 'q', All)
-    print("RBs:")
     printOptions(bestRBs, options, 'r', All)
-    print("WRs:")
     printOptions(bestWRs, options, 'w', All)
-    print("TEs:")
     printOptions(bestTEs, options, 't', All)
-    print("DEFs:")
     printOptions(bestDEFs, options, 'd', All)
-    print("Ks:")
     printOptions(bestKs, options, 'k', All)
+
+    # printing out players
+    
+    print(f'{"QBs:":<26}{"RBs:":<26}{"WRs:":<26}\n')
+    for i in range(5):
+        print(f'q{i+1}. {options["q" + str(i+1)]:<21} r{i+1}. {options["r" + str(i+1)]:<21} w{i+1}. {options["w" + str(i+1)]:<21}')
+    
+    print(f'\n\n{"TEs:":<26}{"Ks:":<27}{"DEFs:":<26}\n')
+    for i in range(5):
+        print(f't{i+1}. {options["t" + str(i+1)]:<21} k{i+1}. {options["k" + str(i+1)]:<21} d{i+1}. {options["d" + str(i+1)]:<21}')
+    
+    print("\n")
 
     print("If you see the player drafted above, please type the letter associated with the position (i.e. 'q' for quarterback, 'r' for runningback, etc), followed by the number")
     print(f'For example, to draft {options["q1"]} please type \'q1\', or \'r2\' to draft {options["r2"]}.\n')
